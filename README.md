@@ -57,7 +57,7 @@ cloud-cost-dashboard/
 │   └── aws_cost_queries.sql              # SQL queries for AWS billing
 ├── scripts/
 │   └── insert_to_postgres.py             # Python script to insert data
-├── .env.example                          # Example environment variables
+├── .env                                  # Environment variables
 └── README.md                             # This file
 ```
 
