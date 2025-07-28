@@ -77,7 +77,23 @@ Ensure your environment is configured with AWS credentials (see Prerequisites).
 
 ### Step 3: Install Steampipe & AWS Plugin
 ```bash
-brew install steampipe  # macOS
+# Update system packages
+sudo apt update
+
+# Install dependencies
+sudo apt install -y wget gnupg lsb-release
+
+# Add the Steampipe GPG key
+wget -qO - https://steampipe.io/signing-key.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/steampipe-archive-keyring.gpg > /dev/null
+
+# Add the Steampipe APT repository
+echo "deb [signed-by=/usr/share/keyrings/steampipe-archive-keyring.gpg] https://apt.steampipe.io stable main" | sudo tee /etc/apt/sources.list.d/steampipe.list
+
+# Update again and install Steampipe
+sudo apt update
+sudo apt install steampipe
+
+# Install the AWS plugin
 steampipe plugin install aws
 ```
 Test a query:
