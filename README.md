@@ -66,17 +66,31 @@ cloud-cost-dashboard/
 ## 🛠️ Setup Steps
 
 ### Step 1: Clone the Repository
-
+```bash
+git clone https://github.com/your-username/cloud-cost-dashboard.git
+cd cloud-cost-dashboard
+```
 
 ### Step 2: Configure AWS Credentials
 Ensure your environment is configured with AWS credentials (see Prerequisites).
 
 ### Step 3: Install Steampipe & AWS Plugin
-
-
+```bash
+brew install steampipe  # macOS
+steampipe plugin install aws
+```
+Test a query:
+```bash
+steampipe query
+> select account_id, service, sum(unblended_cost) as cost from aws_billing_usage_by_service where usage_start_date >= current_date - interval '30 days' group by account_id, service;
+```
 
 ### Step 4: Set Up PostgreSQL
-
+Install PostgreSQL and create a new database:
+```bash
+createdb cloud_costs
+```
+Set credentials in `.env` file (based on `.env.example`).
 
 ### Step 5: Run the Python Script
 Install dependencies and run the script to insert AWS cost data:
