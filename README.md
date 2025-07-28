@@ -34,6 +34,7 @@ Alternatively, configure them using the AWS CLI:
 ```bash
 aws configure
 ```
+> :bulb: To see how to setup IAM, Policy and AWS access. see here [docs/setup-aws-programmatic-access.md](https://github.com/imran1509/Cloud-Cost-Dashboard/blob/main/docs/setup-aws-programmatic-access.md)
 
 ### 2. Installed Tools
 You must have the following installed:
@@ -90,7 +91,7 @@ Install PostgreSQL and create a new database:
 ```bash
 createdb cloud_costs
 ```
-Set credentials in `.env` file (based on `.env.example`).
+Set credentials in `.env` file.
 
 ### Step 5: Run the Python Script
 Install dependencies and run the script to insert AWS cost data:
