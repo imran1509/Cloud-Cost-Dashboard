@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: steampipe_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  steampipe:
+    build:
+      context: ./docker/steampipe
+    container_name: steampipe_aws
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - STEAMPIPE_USER_UID=1000
+      - STEAMPIPE_USER_GID=1000
+    volumes:
+      - ./aws:/home/steampipe/.steampipe/config
+      - ./scripts:/app/scripts
+    working_dir: /app/scripts
+    entrypoint: [ "tail", "-f", "/dev/null" ]  # Keeps the container running
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: steampipe_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+  grafana_data:
+
