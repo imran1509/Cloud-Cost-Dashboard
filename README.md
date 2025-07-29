@@ -44,7 +44,7 @@ You must have the following installed:
 - [Grafana](https://grafana.com/grafana/download): Dashboard visualization.
 - [Python 3](https://www.python.org/downloads/) (for automation script).
 
-Optional (but recommended):
+### Recommended:
 - Docker & Docker Compose (to simplify deployment).
 
 ---
