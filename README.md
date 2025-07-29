@@ -41,13 +41,33 @@ aws configure
 ### 2. Installed Tools
 You must have the following installed:
 
-- [Steampipe](https://steampipe.io/downloads): Query cloud services using SQL.
-- [PostgreSQL](https://www.postgresql.org/download/): Used for storing cost data.
-- [Grafana](https://grafana.com/grafana/download): Dashboard visualization.
-- [Python 3](https://www.python.org/downloads/) (for automation script).
-
-### Recommended:
+- Python (for automation script).
 - Docker & Docker Compose (to simplify deployment).
+---
+
+## 🔑 Environment Configuration
+Create a `.env` file in the project root:
+
+```env
+# AWS Credentials
+AWS_ACCESS_KEY_ID=your_key
+AWS_SECRET_ACCESS_KEY=your_secret
+AWS_DEFAULT_REGION=us-east-1
+
+# PostgreSQL
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=cloud_costs
+DB_USER=clouduser
+DB_PASSWORD=cloudpass
+
+# Steampipe (inside container)
+STEAMPIPE_USER=steampipe
+STEAMPIPE_HOME=/home/steampipe/.steampipe
+
+```
+
+🛑 Never commit your .env file.
 
 ---
 
@@ -88,71 +108,64 @@ git clone https://github.com/your-username/cloud-cost-dashboard.git
 cd cloud-cost-dashboard
 ```
 
-### Step 2: Configure AWS Credentials
-Ensure your environment is configured with AWS credentials (see Prerequisites).
+### Step 2: Start Docker Stack
 
-### Step 3: Install Steampipe & AWS Plugin
 ```bash
-# Update system packages
-sudo apt update
-
-# Install dependencies
-sudo apt install -y wget gnupg lsb-release
-
-# Add the Steampipe GPG key
-wget -qO - https://steampipe.io/signing-key.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/steampipe-archive-keyring.gpg > /dev/null
-
-# Add the Steampipe APT repository
-echo "deb [signed-by=/usr/share/keyrings/steampipe-archive-keyring.gpg] https://apt.steampipe.io stable main" | sudo tee /etc/apt/sources.list.d/steampipe.list
-
-# Update again and install Steampipe
-sudo apt update
-sudo apt install steampipe
-
-# Install the AWS plugin
-steampipe plugin install aws
-```
-Test a query:
-```bash
-steampipe query
-> select account_id, service, sum(unblended_cost) as cost from aws_billing_usage_by_service where usage_start_date >= current_date - interval '30 days' group by account_id, service;
+docker compose up --build -d
 ```
 
-### Step 4: Set Up PostgreSQL
-Install PostgreSQL and create a new database:
-```bash
-createdb cloud_costs
-```
-Set credentials in `.env` file.
+This will:
+  - Build the non-root Steampipe image
+  - Start PostgreSQL with credentials
+  - Start Grafana (port 3000)   
 
-### Step 5: Run the Python Script
-Install dependencies and run the script to insert AWS cost data:
+### Step 3: Run Python Script to Insert Data
+Install Python deps and run the ingestion script:
+
 ```bash
-pip install psycopg2 python-dotenv
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
 python scripts/insert_to_postgres.py
-```
-This fetches cost data using Steampipe and inserts it into PostgreSQL.
 
-### Step 6: Import Dashboard to Grafana
-1. Start Grafana.
-2. Import the JSON from `dashboards/aws_cloud_cost_dashboard.json`.
-3. Set PostgreSQL as the data source.
+```
+This will:
+   - Run Steampipe inside Docker using docker exec
+   - Fetch cost data using SQL (queries/aws_cost_queries.sql)
+   - Insert the results into PostgreSQL using credentials from .env
+
+You can confirm data exists by running:
+
+```basd
+docker exec -it postgres psql -U clouduser -d cloud_costs -c "SELECT * FROM aws_billing LIMIT 5;"
+```
+
+### Step 4: 📊 Import Grafana Dashboard
+- Go to http://your-IP:3000
+- Login: `admin / admin` (you'll be prompted to change password)
+- Add PostgreSQL as a Data Source:
+Host: postgres:5432
+DB Name: cloud_costs
+User: clouduser
+Password: cloudpass
+- Import dashboard from dashboards/aws_cloud_cost_dashboard.json
 
 Done! 🎉 You should now see your AWS costs visualized.
 
 ---
 
 ## 🧠 What Each Component Does
-- **Steampipe**: Pulls AWS billing and usage data with SQL.
-- **Python Script**: Automates inserting that data into a structured DB.
-- **PostgreSQL**: Stores cost history for long-term tracking.
-- **Grafana**: Visualizes cost per service, region, etc.
+- Steampipe: Uses SQL to query AWS billing APIs (via plugin)
+- Dockerfile: Runs Steampipe as non-root for security
+- Python script: Automates querying and inserts results into PostgreSQL
+- PostgreSQL: Stores historical cost data
+- Grafana: Reads data from PostgreSQL and renders cost dashboards
 
 ---
 
 ## 📌 To Do / Coming Next
 - Add support for GCP and Azure.
-- Create Docker Compose setup.
 - Add email/Slack alerts for cost thresholds.
 - Add cron automation script.
 
