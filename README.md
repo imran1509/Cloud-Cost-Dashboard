@@ -53,13 +53,21 @@ You must have the following installed:
 ```
 cloud-cost-dashboard/
 ├── dashboards/
-│   └── aws_cloud_cost_dashboard.json     # Grafana dashboard JSON
+│   └── aws_cloud_cost_dashboard.json      # Grafana dashboard JSON
+├── docker/
+│   └── steampipe/
+│       └── Dockerfile                     # Dockerfile to run Steampipe as non-root
+├── docs/
+│   └── setup-aws-programmatic-access.md   # IAM setup guide
 ├── queries/
-│   └── aws_cost_queries.sql              # SQL queries for AWS billing
+│   └── aws_cost_queries.sql               # SQL queries to get AWS billing data
 ├── scripts/
-│   └── insert_to_postgres.py             # Python script to insert data
-├── .env                                  # Environment variables
-└── README.md                             # This file
+│   └── insert_to_postgres.py              # Python script to load data into PostgreSQL
+├── venv/                                  # Python virtual environment (optional)
+├── .env                                   # Environment config for PostgreSQL
+├── docker-compose.yml                     # Stack orchestration (Postgres, Steampipe, Grafana)
+└── README.md
+
 ```
 
 ---
