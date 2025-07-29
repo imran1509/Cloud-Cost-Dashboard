@@ -7,6 +7,7 @@ This project provides a free and open-source way to monitor AWS cloud costs (GCP
 - **Steampipe**: For querying cloud APIs using SQL.
 - **PostgreSQL**: For storing query results.
 - **Grafana**: For visualizing costs in a dashboard.
+- **Python**: Automate data extraction & loading.
 
 You can easily extend this to monitor GCP and Azure costs as well.
 
@@ -17,6 +18,7 @@ You can easily extend this to monitor GCP and Azure costs as well.
 - No vendor lock-in.
 - No cost (uses free-tier APIs and open-source tools).
 - Easily customizable with SQL.
+- Easily extensible to GCP, Azure, and others.
 
 ---
 
@@ -52,21 +54,27 @@ You must have the following installed:
 ## 📁 Repository Structure
 ```
 cloud-cost-dashboard/
+├── aws/
+│   └── aws.spc                          # Steampipe connection profile
 ├── dashboards/
-│   └── aws_cloud_cost_dashboard.json      # Grafana dashboard JSON
+│   └── aws_cloud_cost_dashboard.json    # Grafana dashboard JSON
 ├── docker/
 │   └── steampipe/
-│       └── Dockerfile                     # Dockerfile to run Steampipe as non-root
+│       └── Dockerfile                   # Dockerfile for Steampipe (non-root)
 ├── docs/
-│   └── setup-aws-programmatic-access.md   # IAM setup guide
+│   ├── setup-aws-programmatic-access.md # AWS IAM setup guide
+│   └── grafana-dashboard-preview.png    # Dashboard screenshot
 ├── queries/
-│   └── aws_cost_queries.sql               # SQL queries to get AWS billing data
+│   └── aws_cost_queries.sql             # SQL queries for AWS billing
 ├── scripts/
-│   └── insert_to_postgres.py              # Python script to load data into PostgreSQL
-├── venv/                                  # Python virtual environment (optional)
-├── .env                                   # Environment config for PostgreSQL
-├── docker-compose.yml                     # Stack orchestration (Postgres, Steampipe, Grafana)
-└── README.md
+│   └── insert_to_postgres.py            # Python script to insert data
+├── .env                                 # Environment variables
+├── docker-compose.yml                   # Docker Compose file for stack
+├── requirements.txt                     # Python dependencies
+├── .gitignore                           # Ignore venv, secrets, etc.
+├── README.md                            # Project documentation
+└── .venv/                               # (optional) Local virtual environment
+
 
 ```
 
